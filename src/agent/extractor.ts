@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { Agent, tool } from '@strands-agents/sdk'
 import { z } from 'zod'
 import { CandidateKnowledgeItemSchema, type CandidateKnowledgeItem } from '../schema/knowledge-item.js'
+import { parseTranscript, resolveSegment } from './segment-resolver.js'
 
 // Read model ID from .env — fails fast with a clear message if missing
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID
@@ -90,6 +91,9 @@ export async function extractConcepts(
   const warnings: string[] = []
   const rawCandidates: CandidateKnowledgeItem[] = []
 
+  // Parse transcript once for programmatic segment resolution
+  const transcriptLines = parseTranscript(transcriptText)
+
   // Counter for auto-incrementing IDs
   let idCounter = 1
 
@@ -102,6 +106,21 @@ export async function extractConcepts(
       for (const raw of input.candidates) {
         const id = `KI-${String(idCounter).padStart(4, '0')}`
         idCounter++
+
+        // Resolve segment timestamps from the transcript text — do NOT trust LLM times
+        const resolved = resolveSegment(
+          raw.quote,
+          transcriptLines,
+          raw.start_time,
+          raw.end_time
+        )
+
+        if (!resolved.resolved) {
+          warnings.push(
+            `Warning: segment for ${id} could not be resolved from transcript text — ` +
+            `LLM-provided times used as fallback (verify manually).`
+          )
+        }
 
         // Build the candidate shape
         const candidate = {
@@ -121,8 +140,8 @@ export async function extractConcepts(
             transcript_path: transcriptPath,
             segment: {
               id: raw.segment_id,
-              start_time: raw.start_time,
-              end_time: raw.end_time,
+              start_time: resolved.start_time,  // ← from transcript, not LLM
+              end_time: resolved.end_time,       // ← from transcript, not LLM
             },
             quote: { text: raw.quote, language: 'en' },
             audio_path: null,
