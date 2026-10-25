@@ -1,0 +1,30 @@
+[00:00.5 - 00:10.5] Work we've done with our students has been globally recognized, such as our win in the DawnBench competition, uh, which showed how we could train big
+[00:10.5 - 00:14.7] neural networks faster than anybody in the world and cheaper than anybody in the world.
+[00:14.7 - 00:23.4] Um, and so that was a, a really big step in twenty eighteen, um, which actually made a big difference.
+[00:23.4 - 00:28.8] Uh, Google started using our special approaches, um, in their models.
+[00:28.8 - 00:35.8] Um, Nvidia started t-- uh, optimizing their stuff using our approaches, um, so it made quite a big difference there.
+[00:35.8 - 00:46.0] Um, I'm the inventor of the ULMFiT algorithm, which according to the Transformers book, was one of the two, um, key foundations behind
+[00:46.0 - 00:48.9] the modern NLP, uh, revolution.
+[00:48.9 - 00:53.6] Um, this is the, uh, um, paper here.
+[00:53.6 - 01:01.5] And, uh, actually, you know, interesting point about that, it was actually invented for, um, for a Fast.ai course.
+[01:01.5 - 01:11.7] So the first time it appeared was not actually in, um, uh, the, uh, the journal, but it was actually in lesson four of the
+[01:11.7 - 01:12.2] course.
+[01:12.2 - 01:16.4] I think the twenty sixteen course, if I remember correctly.
+[01:16.4 - 01:24.1] Um, and you know, most importantly, of course, I've been teaching this course, um, since version one.
+[01:24.1 - 01:31.1] And, uh, this is actually the-- this-- I think this is the very first version of it, um, which even back then was getting HBR's attention.
+[01:31.1 - 01:39.1] Um, a lot of people have been watching the course, and it's been, um, you know, really widely used.
+[01:39.1 - 01:43.2] Um, YouTube doesn't show likes anymore, so I have to show you our likes for you.
+[01:43.2 - 01:49.4] Um, you know, it's, it's been amazing to see, um, how...
+[01:49.4 - 01:59.5] yeah, how many alumni have gone from this to, to, you know, to really doing amazing things, you know.
+[01:59.5 - 02:08.4] And, uh, so for example, Andrej Karpathy told me that at Tesla, I think he said pretty much everybody who joins Tesla in AI is meant to do this course.
+[02:08.4 - 02:13.7] Uh, I believe at OpenAI, they told me that, uh, all the residents joining there first do this course.
+[02:13.7 - 02:21.2] Um, so this, you know, this course is really widely used in, in industry and research for people, um, and they have a lot of success.
+[02:21.2 - 02:28.0] Okay, so there's a bit of brief information about why you should, um, hopefully keep going with this.
+[02:28.0 - 02:32.1] Um, all right, so let's get back to what's, what's happened here.
+[02:32.1 - 02:38.5] Why are we able to create a bird recognizer, um, in a minute or two?
+[02:38.5 - 02:41.0] Um, and why couldn't we do it before?
+[02:41.0 - 02:43.6] So I'm gonna go back to twenty twelve.
+[02:43.6 - 02:48.7] And in twenty twelve, this was how image recognition was done.
+[02:48.7 - 02:52.8] Um, this is, um, the computational pathologist.
+[02:52.8 - 02:55.6] It was a, a, um, project done at Stanford.
+[02:55.6 - 03:04.3] Uh, very successful, very famous project that was looking at the five-year survival, um, of, uh, breast cancer patients by-

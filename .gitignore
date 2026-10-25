@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Personal learning context — kept out of commits by default
+devpost/learner-profile.md
+
+# Environment variables (keep example file)
+.env
+.env.*
+!.env.example
