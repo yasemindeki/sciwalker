@@ -1,6 +1,12 @@
 node_modules/
 dist/
 
+# Runtime-generated output
+output/
+
+# macOS resource fork files
+._*
+
 # Personal learning context — kept out of commits by default
 devpost/learner-profile.md
 
@@ -8,3 +14,6 @@ devpost/learner-profile.md
 .env
 .env.*
 !.env.example
+
+# Stray duplicate transcript
+/transcription.txt
