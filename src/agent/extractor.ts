@@ -27,8 +27,8 @@ const ExtractConceptsInputSchema = z.object({
         definition: z.string().describe('A clear, concise definition of the concept in context'),
         scope_note: z.string().optional().describe('Disambiguation note if needed'),
         segment_id: z.string().describe('Unique segment identifier, e.g. seg-001'),
-        start_time: z.string().describe('Segment start time in HH:MM:SS.mmm or MM:SS.S format'),
-        end_time: z.string().describe('Segment end time in HH:MM:SS.mmm or MM:SS.S format'),
+        start_time: z.string().describe('Timestamp of the transcript line where the verbatim quote BEGINS — must match the quote exactly, not the broader topic'),
+        end_time: z.string().describe('Timestamp of the transcript line where the verbatim quote ENDS — must match the quote exactly, not the broader topic'),
         quote: z.string().describe('The EXACT verbatim text from the transcript — no paraphrasing'),
         classification: z
           .enum(['supports', 'insufficient', 'potential_contradiction'])
@@ -61,14 +61,21 @@ Rules you MUST follow:
 3. The "definition" field is your interpreted explanation — write it clearly and
    concisely in your own words.
 4. Assign IDs sequentially starting from KI-0001.
-5. Classification rules:
+5. Segment timing rules — this is critical for source accuracy:
+   - "start_time" MUST be the timestamp of the line where your verbatim quote begins.
+   - "end_time" MUST be the timestamp of the line where your verbatim quote ends.
+   - Do NOT extend the segment beyond the lines that contain the quote text.
+   - The segment must match the quote, not the broader topic discussion.
+   - Example: if the quote comes from lines [00:35.8 - 00:46.0] and [00:46.0 - 00:48.9],
+     use start_time="00:35.8" and end_time="00:48.9".
+6. Classification rules:
    - "supports": the source text clearly supports the extracted concept
    - "insufficient": the source mentions the concept but provides little evidence
    - "potential_contradiction": the concept may conflict with another extracted item
      or with what the source actually says
    - NEVER use language implying definitive contradiction — potential_contradiction
      is the strongest negative classification you are allowed to produce.
-6. Extract between 3 and 8 concepts per transcript. Quality over quantity.`
+7. Extract between 3 and 8 concepts per transcript. Quality over quantity.`
 
 // ---------------------------------------------------------------------------
 // extractConcepts
