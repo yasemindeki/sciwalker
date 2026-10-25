@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { Box, Text, useApp } from 'ink'
+import fs from 'fs'
 import { writeApprovedCards } from '../output/writer.js'
 import type { ApprovedKnowledgeItem } from '../schema/knowledge-item.js'
 
@@ -15,8 +16,15 @@ export function CloseBlock({ approvedCards }: CloseBlockProps) {
   useEffect(() => {
     if (approvedCards.length > 0) {
       writeApprovedCards(approvedCards, OUTPUT_PATH)
+    } else {
+      // PRD: "A run in which every card was rejected leaves no card in that file."
+      // Remove any output file left by a previous run.
+      try {
+        fs.unlinkSync(OUTPUT_PATH)
+      } catch {
+        // File didn't exist — that's fine, nothing to remove.
+      }
     }
-    // Give Ink time to render the final message before exiting
     const timer = setTimeout(() => exit(), 300)
     return () => clearTimeout(timer)
   }, [approvedCards, exit])
