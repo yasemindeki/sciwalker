@@ -4,13 +4,15 @@ import { Box, Text, useInput } from 'ink'
 interface StartupBlockProps {
   transcriptPath: string
   candidateCount: number
+  failureCount: number
   warnings: string[]
   onReady: () => void
 }
 
 export function StartupBlock({
-  transcriptPath,
+  transcriptPath: _transcriptPath,
   candidateCount,
+  failureCount,
   warnings,
   onReady,
 }: StartupBlockProps) {
@@ -33,6 +35,7 @@ export function StartupBlock({
       <Box>
         <Text color="green">
           Status:  Prepared {candidateCount} concept candidate{candidateCount !== 1 ? 's' : ''}
+          {failureCount > 0 ? ` (${failureCount} failed validation — shown after review)` : ''}
         </Text>
       </Box>
 

@@ -5,6 +5,7 @@ import React from 'react'
 import { render } from 'ink'
 import { App } from './tui/App.js'
 import { extractConcepts } from './agent/extractor.js'
+import type { CandidateKnowledgeItem, FailedKnowledgeItem } from './schema/knowledge-item.js'
 
 const transcriptPath = process.argv[2]
 
@@ -55,12 +56,14 @@ process.stdout.write('Status:  Reading transcript...\n')
 process.stdout.write('Status:  Preparing concept candidates...\n')
 
 // ── Run extraction ───────────────────────────────────────────────────────────
-let candidates = []
+let candidates: CandidateKnowledgeItem[] = []
+let failures: FailedKnowledgeItem[] = []
 let warnings: string[] = []
 
 try {
   const result = await extractConcepts(transcriptText, absoluteTranscriptPath)
   candidates = result.candidates
+  failures = result.failures
   warnings = result.warnings
 } catch (err: unknown) {
   const message = err instanceof Error ? err.message : String(err)
@@ -87,6 +90,7 @@ render(
   <App
     transcriptPath={transcriptPath}
     candidates={candidates}
+    failures={failures}
     warnings={[]}
   />
 )

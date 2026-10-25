@@ -51,11 +51,11 @@ const SourceSchema = z.object({
 // ---------------------------------------------------------------------------
 
 const ConceptSchema = z.object({
-  id: z.string().min(1),                          // e.g. "gradient_descent"
-  pref_label: LangStringSchema,                   // canonical label
+  id: z.string().min(1),                             // e.g. "gradient_descent"
+  pref_label: LangStringSchema,                      // canonical label
   alt_labels: z.array(LangStringSchema).default([]), // synonyms / alternate names
-  definition: LangStringSchema,                   // interpreted explanation
-  scope_note: LangStringSchema.optional(),        // disambiguation note
+  definition: LangStringSchema,                      // interpreted explanation
+  scope_note: LangStringSchema.optional(),           // disambiguation note
 })
 
 // ---------------------------------------------------------------------------
@@ -92,3 +92,16 @@ export const ApprovedKnowledgeItemSchema = CandidateKnowledgeItemSchema.extend({
 })
 
 export type ApprovedKnowledgeItem = z.infer<typeof ApprovedKnowledgeItemSchema>
+
+// ---------------------------------------------------------------------------
+// Failed KnowledgeItem — candidate that failed schema validation
+// Carries the raw partial data and the validation error message for display.
+// Shown in Failure mode (between Review and Close) so the researcher knows
+// what was dropped and why — nothing is silently lost.
+// ---------------------------------------------------------------------------
+
+export interface FailedKnowledgeItem {
+  id: string
+  rawData: unknown
+  validationError: string
+}

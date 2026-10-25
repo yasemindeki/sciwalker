@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { Agent, tool } from '@strands-agents/sdk'
 import { z } from 'zod'
-import { CandidateKnowledgeItemSchema, type CandidateKnowledgeItem } from '../schema/knowledge-item.js'
+import { CandidateKnowledgeItemSchema, type CandidateKnowledgeItem, type FailedKnowledgeItem } from '../schema/knowledge-item.js'
 import { parseTranscript, resolveSegment } from './segment-resolver.js'
 
 // Read model ID from .env — fails fast with a clear message if missing
@@ -87,9 +87,10 @@ Rules you MUST follow:
 export async function extractConcepts(
   transcriptText: string,
   transcriptPath: string
-): Promise<{ candidates: CandidateKnowledgeItem[]; warnings: string[] }> {
+): Promise<{ candidates: CandidateKnowledgeItem[]; failures: FailedKnowledgeItem[]; warnings: string[] }> {
   const warnings: string[] = []
   const rawCandidates: CandidateKnowledgeItem[] = []
+  const failures: FailedKnowledgeItem[] = []
 
   // Parse transcript once for programmatic segment resolution
   const transcriptLines = parseTranscript(transcriptText)
@@ -157,6 +158,7 @@ export async function extractConcepts(
         } else {
           const issues = result.error.issues.map((i) => i.message).join('; ')
           warnings.push(`Warning: candidate ${id} was skipped (schema validation failure: ${issues}).`)
+          failures.push({ id, rawData: candidate, validationError: issues })
         }
       }
 
@@ -179,5 +181,5 @@ export async function extractConcepts(
     `Call the submit_concepts tool with all extracted candidates.`
   )
 
-  return { candidates: rawCandidates, warnings }
+  return { candidates: rawCandidates, failures, warnings }
 }
