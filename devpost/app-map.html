@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sciwalker — App Map</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1.5rem; color: #1a1a1a; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #555; margin-bottom: 2rem; }
+    h2 { font-size: 1.1rem; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3rem; margin-top: 2rem; }
+    .pipeline { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .step { background: #f4f4f4; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.9rem; }
+    .step.ai { background: #eef6ff; border-color: #99c9ff; }
+    .step.code { background: #efffee; border-color: #99ddaa; }
+    .step.tui  { background: #fff8ee; border-color: #ffcc77; }
+    .arrow { align-self: center; color: #999; font-size: 1.1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1rem 0; }
+    th { text-align: left; background: #f4f4f4; padding: 0.4rem 0.6rem; border: 1px solid #ddd; }
+    td { padding: 0.4rem 0.6rem; border: 1px solid #ddd; vertical-align: top; }
+    td code, th code { background: #f0f0f0; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.85rem; }
+    .tag { display: inline-block; font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; }
+    .tag.ai   { background: #eef6ff; color: #0066cc; }
+    .tag.code { background: #efffee; color: #226622; }
+    .tag.tui  { background: #fff8ee; color: #995500; }
+    .note { background: #fffbe6; border-left: 4px solid #f0c040; padding: 0.6rem 1rem; margin: 1rem 0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<h1>sciwalker</h1>
+<p class="subtitle">Source-grounded concept card extraction from academic transcripts · App Map</p>
+
+<h2>Data pipeline</h2>
+<div class="pipeline">
+  <div class="step code">transcript.txt</div>
+  <div class="arrow">→</div>
+  <div class="step code">src/index.tsx<br><small>arg validation</small></div>
+  <div class="arrow">→</div>
+  <div class="step ai">src/agent/extractor.ts<br><small>Strands + Bedrock</small></div>
+  <div class="arrow">→</div>
+  <div class="step code">src/agent/segment-resolver.ts<br><small>timestamp grounding</small></div>
+  <div class="arrow">→</div>
+  <div class="step code">src/schema/knowledge-item.ts<br><small>Zod validation</small></div>
+  <div class="arrow">→</div>
+  <div class="step tui">src/tui/App.tsx<br><small>Ink TUI</small></div>
+  <div class="arrow">→</div>
+  <div class="step code">src/output/writer.ts<br><small>JSON persist</small></div>
+</div>
+
+<h2>Key files</h2>
+<table>
+  <tr><th>File</th><th>What it does</th><th>Kind</th></tr>
+  <tr>
+    <td><code>src/index.tsx</code></td>
+    <td>Entry point. Validates args and file, runs extraction, mounts Ink app.</td>
+    <td><span class="tag code">code</span></td>
+  </tr>
+  <tr>
+    <td><code>src/agent/extractor.ts</code></td>
+    <td>Strands agent loop. Defines the <code>submit_concepts</code> tool with a Zod input schema. Calls Bedrock once per run and collects candidates and failures.</td>
+    <td><span class="tag ai">AI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/agent/segment-resolver.ts</code></td>
+    <td>Parses the transcript into structured lines. Resolves <code>start_time</code>/<code>end_time</code> from the verbatim quote text — deterministic, not LLM-provided.</td>
+    <td><span class="tag code">code</span></td>
+  </tr>
+  <tr>
+    <td><code>src/schema/knowledge-item.ts</code></td>
+    <td>Zod schemas for <code>CandidateKnowledgeItem</code>, <code>ApprovedKnowledgeItem</code>, and the <code>FailedKnowledgeItem</code> interface. The contract between agent and TUI.</td>
+    <td><span class="tag code">code</span></td>
+  </tr>
+  <tr>
+    <td><code>src/tui/App.tsx</code></td>
+    <td>Root Ink component. Manages four sequential modes: <code>startup → review → failure → close</code>. Accumulates approved cards across the review loop.</td>
+    <td><span class="tag tui">TUI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/tui/StartupBlock.tsx</code></td>
+    <td>Shows candidate count (and failure count if any). Waits for Enter to begin review.</td>
+    <td><span class="tag tui">TUI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/tui/CardReview.tsx</code></td>
+    <td>Displays one card at a time with all fields. Accepts <code>[a]</code>pprove / <code>[r]</code>eject via <code>useInput</code>. Visual separator between AI-generated and source fields.</td>
+    <td><span class="tag tui">TUI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/tui/FailureBlock.tsx</code></td>
+    <td>Shows each Zod validation failure: ID, error message, raw model output. Press <code>[n]</code> to advance. Nothing is silently lost.</td>
+    <td><span class="tag tui">TUI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/tui/CloseBlock.tsx</code></td>
+    <td>Calls <code>writer.ts</code>, shows final summary line, exits. Deletes output file if all cards were rejected.</td>
+    <td><span class="tag tui">TUI</span></td>
+  </tr>
+  <tr>
+    <td><code>src/output/writer.ts</code></td>
+    <td>Auto-creates <code>output/</code> dir, validates each card against <code>ApprovedKnowledgeItemSchema</code>, writes pretty-printed JSON array.</td>
+    <td><span class="tag code">code</span></td>
+  </tr>
+</table>
+
+<h2>The key design decision</h2>
+<div class="note">
+  <strong>LLM for semantics, code for structure.</strong><br>
+  The Strands agent decides <em>what</em> to extract and <em>how</em> to classify it.
+  <code>segment-resolver.ts</code> decides <em>where</em> the quote appears — by searching the transcript text directly, not by trusting the model's timestamps.
+  Zod validates the boundary between the two.
+  This pattern applies anywhere LLM output needs to be verified, grounded, or persisted.
+</div>
+
+<h2>TUI modes</h2>
+<table>
+  <tr><th>Mode</th><th>Component</th><th>Trigger</th></tr>
+  <tr><td>startup</td><td><code>StartupBlock</code></td><td>App mounts</td></tr>
+  <tr><td>review</td><td><code>CardReview</code></td><td>Researcher presses Enter</td></tr>
+  <tr><td>failure</td><td><code>FailureBlock</code></td><td>After last card, if failures &gt; 0</td></tr>
+  <tr><td>close</td><td><code>CloseBlock</code></td><td>After last card (or last failure)</td></tr>
+</table>
+
+<h2>Run it</h2>
+<pre style="background:#f4f4f4;padding:1rem;border-radius:6px;font-size:0.9rem;">node node_modules/.bin/tsx src/index.tsx audio/transcription.txt</pre>
+
+</body>
+</html>

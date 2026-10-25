@@ -71,8 +71,8 @@ build_mode: learn
 
 ## Code Tour and App Map
 
-- [ ] Learning wrap-up complete
-- [ ] `devpost/app-map.html` created
+- [x] Learning wrap-up complete
+- [x] `devpost/app-map.html` created
 
 ## Revisions
 
