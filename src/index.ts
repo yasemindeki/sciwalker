@@ -12,7 +12,7 @@ if (!transcriptPath) {
 }
 
 // Error: transcript path does not exist or is unreadable
-let transcriptText: string
+let transcriptText = ''
 try {
   transcriptText = fs.readFileSync(transcriptPath, 'utf-8')
 } catch (err: unknown) {
