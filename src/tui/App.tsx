@@ -9,38 +9,31 @@ type Mode = 'startup' | 'review' | 'close'
 
 interface AppProps {
   transcriptPath: string
-  /** null = extraction still in progress, array = extraction complete */
-  candidates: CandidateKnowledgeItem[] | null
+  candidates: CandidateKnowledgeItem[]
   warnings: string[]
 }
 
-export function App({ transcriptPath, candidates, warnings }: AppProps) {
+export function App({ transcriptPath: _transcriptPath, candidates, warnings }: AppProps) {
   const [mode, setMode] = useState<Mode>('startup')
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [approvedCards, setApprovedCards] = useState<ApprovedKnowledgeItem[]>([])
 
-  // Startup → Review transition
   function handleReady() {
-    if (candidates && candidates.length > 0) {
-      setMode('review')
-    }
+    setMode('review')
   }
 
-  // Approve current card, advance to next or close
   function handleApprove(card: ApprovedKnowledgeItem) {
-    const updated = [...approvedCards, card]
-    setApprovedCards(updated)
+    setApprovedCards((prev) => [...prev, card])
     advanceCard()
   }
 
-  // Reject current card, advance to next or close
   function handleReject() {
     advanceCard()
   }
 
   function advanceCard() {
     const nextIndex = currentCardIndex + 1
-    if (!candidates || nextIndex >= candidates.length) {
+    if (nextIndex >= candidates.length) {
       setMode('close')
     } else {
       setCurrentCardIndex(nextIndex)
@@ -51,14 +44,14 @@ export function App({ transcriptPath, candidates, warnings }: AppProps) {
     <Box flexDirection="column">
       {mode === 'startup' && (
         <StartupBlock
-          transcriptPath={transcriptPath}
-          onReady={handleReady}
-          candidateCount={candidates === null ? null : candidates.length}
+          transcriptPath={_transcriptPath}
+          candidateCount={candidates.length}
           warnings={warnings}
+          onReady={handleReady}
         />
       )}
 
-      {mode === 'review' && candidates && (
+      {mode === 'review' && (
         <CardReview
           key={currentCardIndex}
           card={candidates[currentCardIndex]}
